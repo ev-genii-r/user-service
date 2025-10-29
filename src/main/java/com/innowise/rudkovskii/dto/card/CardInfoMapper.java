@@ -11,10 +11,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CardInfoMapper {
 
-    CardInfoResponse userToCardInfoResponse(User user);
+    CardInfoResponse cardInfoToCardInfoResponse(CardInfo cardInfo);
 
     @Mapping(target = "user", source = "user")
-    CardInfoWithUserResponse userToCardInfoWithUserResponse(User user);
+    CardInfoWithUserResponse cardInfoToCardInfoWithUserResponse(CardInfo cardInfo);
 
     CardInfo toEntity(CardInfoCreateRequest cardInfoCreateRequest);
 

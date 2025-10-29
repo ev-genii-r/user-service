@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     void create(User user);
 
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     Page<User> findAll(Pageable pageable);
 
@@ -27,7 +27,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query("UPDATE users u SET u.name = :name, u.surname = :surname, " +
             "u.birthDate = :birthDate, u.email = :email " +
             "WHERE u.id = :id")
-    int updateUser(@Param("id") Integer id,
+    User updateUser(@Param("id") Integer id,
                    @Param("name") String name,
                    @Param("surname") String surname,
                    @Param("birthDate") LocalDate birthDate,
@@ -37,4 +37,5 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query(value = "DELETE FROM User WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id") int id);
 
+    boolean existsByEmail(String email);
 }

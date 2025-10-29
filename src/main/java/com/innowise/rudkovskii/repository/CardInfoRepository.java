@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CardInfoRepository extends JpaRepository<CardInfo, Integer> {
 
-    void create(CardInfo cardInfo);
+    CardInfo create(CardInfo cardInfo);
 
     CardInfo findCardInfoById(int id);
 
@@ -22,4 +24,7 @@ public interface CardInfoRepository extends JpaRepository<CardInfo, Integer> {
     @Query(value = "DELETE FROM card_info WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id") int id);
 
+    boolean existsByNumber(String number);
+
+    Optional<CardInfo> findByNumber(String number);
 }

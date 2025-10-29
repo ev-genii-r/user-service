@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext("com.innowise.rudkovskii");
         UserService service = (UserService) applicationContext.getBean(UserService.class);
-        User user = service.findById(1);
+        User user = service.getById(1);
         System.out.println(user);
     }
 }

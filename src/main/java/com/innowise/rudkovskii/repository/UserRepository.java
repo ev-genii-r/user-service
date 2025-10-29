@@ -18,15 +18,13 @@ public interface UserRepository extends JpaRepository<User,Integer> {
 
     void create(User user);
 
-    Optional<User> findById(Integer id);
-
     User findByEmail(String email);
 
     Page<User> findAll(Pageable pageable);
 
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.name = :name, u.surname = :surname, " +
+    @Query("UPDATE users u SET u.name = :name, u.surname = :surname, " +
             "u.birthDate = :birthDate, u.email = :email " +
             "WHERE u.id = :id")
     int updateUser(@Param("id") Integer id,

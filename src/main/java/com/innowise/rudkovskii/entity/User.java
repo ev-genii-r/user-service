@@ -6,12 +6,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table
-@Entity(name = "users")
+@Table(name = "users")
+@Entity
 
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "cards")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode

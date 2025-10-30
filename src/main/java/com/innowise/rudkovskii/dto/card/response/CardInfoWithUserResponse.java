@@ -1,6 +1,7 @@
 package com.innowise.rudkovskii.dto.card.response;
 
 import com.innowise.rudkovskii.dto.user.response.UserResponse;
+import com.innowise.rudkovskii.entity.User;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,6 @@ public class CardInfoWithUserResponse {
 
     private LocalDate expirationDate;
 
-    private UserResponse user;
+    private User user;
 
 }

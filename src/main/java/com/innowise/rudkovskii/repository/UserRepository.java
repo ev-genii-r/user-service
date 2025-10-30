@@ -16,15 +16,13 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-    void create(User user);
-
     Optional<User> findByEmail(String email);
 
     Page<User> findAll(Pageable pageable);
 
     @Modifying
     @Transactional
-    @Query("UPDATE users u SET u.name = :name, u.surname = :surname, " +
+    @Query("UPDATE User u SET u.name = :name, u.surname = :surname, " +
             "u.birthDate = :birthDate, u.email = :email " +
             "WHERE u.id = :id")
     User updateUser(@Param("id") Integer id,
@@ -34,7 +32,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
                    @Param("email") String email);
 
     @Modifying
-    @Query(value = "DELETE FROM User WHERE id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM users WHERE id = :id", nativeQuery = true)
     void deleteById(@Param("id") int id);
 
     boolean existsByEmail(String email);

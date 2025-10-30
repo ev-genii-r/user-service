@@ -14,8 +14,6 @@ import java.util.Optional;
 @Repository
 public interface CardInfoRepository extends JpaRepository<CardInfo, Integer> {
 
-    CardInfo create(CardInfo cardInfo);
-
     CardInfo findCardInfoById(int id);
 
     Page<CardInfo> findAll(Pageable pageable);

@@ -14,13 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class CardInfoService {
 
     @Autowired
     private CardInfoRepository cardInfoRepository;
 
     @CachePut(value = "cards", key = "#result.id")
+    @Transactional
     public CardInfo create(CardInfo cardInfo){
         if(cardInfoRepository.existsByNumber(cardInfo.getNumber())){
             throw new ValidationException("Card number already exists!");
@@ -38,24 +38,24 @@ public class CardInfoService {
     @Cacheable(value = "cards", key = "#id")
     public CardInfo getById(Integer id){
         return cardInfoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Card not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Card with id: " + id));
     }
 
     @Cacheable(value = "cardsByNumber", key = "#number")
     public CardInfo getByNumber(String number){
         return cardInfoRepository.findByNumber(number)
-                .orElseThrow(() -> new ResourceNotFoundException("Card not found with number: " + number));
+                .orElseThrow(() -> new ResourceNotFoundException("Card with number: " + number));
     }
 
-    @Transactional(readOnly = true)
     public List<CardInfo> getAll(){
         return cardInfoRepository.findAll();
     }
 
-    @CacheEvict(value = {"cards", "cardsByNumber"}, allEntries = true)
-    public void delete(Integer id){
+    @CacheEvict(value = "cards", key = "#id")
+    @Transactional
+    public void delete(int id){
         if(!cardInfoRepository.existsById(id)){
-            throw new ResourceNotFoundException("Card not found with id: " + id);
+            throw new ResourceNotFoundException("Card with id: " + id);
         }
         cardInfoRepository.deleteById(id);
     }

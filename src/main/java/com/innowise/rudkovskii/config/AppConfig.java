@@ -2,10 +2,7 @@ package com.innowise.rudkovskii.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -32,6 +29,7 @@ import java.util.Properties;
 @ComponentScan("com.innowise.rudkovskii")
 @EnableJpaRepositories("com.innowise.rudkovskii.repository")
 @PropertySource("classpath:application.properties")
+@Import(RedisConfig.class)
 public class AppConfig {
 
     @Autowired
@@ -65,35 +63,6 @@ public class AppConfig {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;
-    }
-
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
-        return new JedisConnectionFactory();
-    }
-
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory());
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(RedisSerializer.json());
-        return template;
-    }
-
-    @Bean
-    public CacheManager cacheManager() {
-        RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
-                .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(30))
-                .serializeValuesWith(RedisSerializationContext
-                        .SerializationPair
-                        .fromSerializer(RedisSerializer.json()));
-
-        return RedisCacheManager
-                .builder(redisConnectionFactory())
-                .cacheDefaults(redisCacheConfiguration)
-                .build();
     }
 
     private Properties additionalProperties() {

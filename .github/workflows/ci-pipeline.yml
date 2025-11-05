@@ -67,7 +67,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     needs: unit-tests
-    if: false  # Temporarily disable integration tests
+    if: false
 
     services:
       redis:
@@ -90,7 +90,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-
       - name: Install redis-tools and check Redis
         run: |
           sudo apt-get update
@@ -114,7 +113,7 @@ jobs:
 
   code-analysis:
     runs-on: ubuntu-latest
-    needs: unit-tests  # Changed from 'test' to 'unit-tests'
+    needs: unit-tests
 
     steps:
       - name: Checkout code
@@ -144,7 +143,8 @@ jobs:
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-            -Dsonar.coverage.exclusions=**/*IntegrationTest.java
+            -Dsonar.coverage.exclusions=**/*IntegrationTest.java \
+            -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

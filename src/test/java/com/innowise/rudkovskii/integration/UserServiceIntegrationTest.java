@@ -6,11 +6,15 @@ import com.innowise.rudkovskii.exception.ResourceNotFoundException;
 import com.innowise.rudkovskii.exception.ValidationException;
 import com.innowise.rudkovskii.repository.UserRepository;
 import com.innowise.rudkovskii.service.UserService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,10 +31,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceIntegrationTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres");
+
+    @BeforeAll
+    static void init() {
+        postgres.start();
+        System.setProperty("DB_URL", postgres.getJdbcUrl());
+        System.setProperty("DB_USERNAME", postgres.getUsername());
+        System.setProperty("DB_PASSWORD", postgres.getPassword());
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Autowired
     private UserService userService;
@@ -38,11 +54,19 @@ class UserServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
+
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
+
+        if (userRepository != null) {
+            userRepository.deleteAll();
+        }
 
         testUser = new User();
         testUser.setName("Integration");
@@ -72,12 +96,12 @@ class UserServiceIntegrationTest {
         duplicateUser.setName("Another");
         duplicateUser.setSurname("User");
         duplicateUser.setBirthDate(LocalDate.of(1990, 1, 1));
-        duplicateUser.setEmail(testUser.getEmail()); // Same email
+        duplicateUser.setEmail(testUser.getEmail());
 
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> userService.createUser(duplicateUser));
 
-        assertEquals("Email already exists", exception.getMessage());
+        assertEquals("Validation exception: Email already exists", exception.getMessage());
     }
 
     @Test
@@ -127,7 +151,7 @@ class UserServiceIntegrationTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> userService.getById(createdUser.getId()));
 
-        assertEquals("User not found with id: " + createdUser.getId(), exception.getMessage());
+        assertEquals("User with id: " + createdUser.getId() + " not found", exception.getMessage());
     }
 
     @Test

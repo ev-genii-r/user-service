@@ -1,5 +1,6 @@
 package com.innowise.rudkovskii.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,5 +32,6 @@ public class CardInfo {
     private String holder;
 
     @Column(name = "expiration_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate expirationDate;
 }

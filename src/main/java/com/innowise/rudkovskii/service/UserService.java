@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Service
 public class UserService {
 
@@ -67,11 +68,13 @@ public class UserService {
             throw new ValidationException("Email already exists");
         }
 
-        return userRepository.updateUser(id,
+        userRepository.updateUser(id,
                 user.getName(),
                 user.getSurname(),
                 user.getBirthDate(),
                 user.getEmail());
+
+        return user;
     }
 
     @CacheEvict(value = "users", key = "#id")

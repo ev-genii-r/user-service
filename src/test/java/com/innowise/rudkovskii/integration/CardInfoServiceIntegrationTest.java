@@ -8,11 +8,16 @@ import com.innowise.rudkovskii.exception.ValidationException;
 import com.innowise.rudkovskii.repository.CardInfoRepository;
 import com.innowise.rudkovskii.repository.UserRepository;
 import com.innowise.rudkovskii.service.CardInfoService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,10 +34,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class CardInfoServiceIntegrationTest {
 
     @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test");
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Autowired
     private CardInfoService cardInfoService;
@@ -41,13 +50,26 @@ class CardInfoServiceIntegrationTest {
     private CardInfoRepository cardInfoRepository;
 
     @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
     private UserRepository userRepository;
 
     private User testUser;
     private CardInfo testCard;
 
+    @BeforeAll
+    static void init() {
+        postgres.start();
+        System.setProperty("DB_URL", postgres.getJdbcUrl());
+        System.setProperty("DB_USERNAME", postgres.getUsername());
+        System.setProperty("DB_PASSWORD", postgres.getPassword());
+    }
+
     @BeforeEach
     void setUp() {
+
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
 
         cardInfoRepository.deleteAll();
         userRepository.deleteAll();
@@ -86,7 +108,7 @@ class CardInfoServiceIntegrationTest {
         cardInfoService.create(testCard);
 
         CardInfo duplicateCard = new CardInfo();
-        duplicateCard.setNumber(testCard.getNumber()); // Same card number
+        duplicateCard.setNumber(testCard.getNumber());
         duplicateCard.setHolder("DIFFERENT HOLDER");
         duplicateCard.setExpirationDate(LocalDate.of(2026, 6, 30));
         duplicateCard.setUser(testUser);
@@ -94,7 +116,7 @@ class CardInfoServiceIntegrationTest {
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> cardInfoService.create(duplicateCard));
 
-        assertEquals("Card number already exists!", exception.getMessage());
+        assertEquals("Validation exception: Card number already exists!", exception.getMessage());
     }
 
     @Test
@@ -135,7 +157,7 @@ class CardInfoServiceIntegrationTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> cardInfoService.getByNumber("0000000000000000"));
 
-        assertEquals("Card not found with number: 0000000000000000", exception.getMessage());
+        assertEquals("Card with number: 0000000000000000 not found", exception.getMessage());
     }
 
     @Test
@@ -151,7 +173,7 @@ class CardInfoServiceIntegrationTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> cardInfoService.getById(createdCard.getId()));
 
-        assertEquals("Card not found with id: " + createdCard.getId(), exception.getMessage());
+        assertEquals("Card with id: " + createdCard.getId() + " not found", exception.getMessage());
     }
 
     @Test
@@ -160,7 +182,7 @@ class CardInfoServiceIntegrationTest {
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                 () -> cardInfoService.delete(999));
 
-        assertEquals("Card not found with id: 999", exception.getMessage());
+        assertEquals("Card with id: 999 not found", exception.getMessage());
     }
 
     @Test

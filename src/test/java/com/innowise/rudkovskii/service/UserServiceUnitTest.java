@@ -154,7 +154,7 @@ public class UserServiceUnitTest {
 
         when(userRepository.existsById(1)).thenReturn(true);
         when(userRepository.updateUser(eq(1), anyString(), anyString(), any(LocalDate.class), anyString()))
-                .thenReturn(updatedUser.getId());
+                .thenReturn(1);
 
         User result = userService.updateUser(1, updatedUser);
 

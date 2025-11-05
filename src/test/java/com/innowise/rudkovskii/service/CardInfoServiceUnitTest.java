@@ -36,6 +36,7 @@ class CardInfoServiceUnitTest {
 
     @BeforeEach
     void setUp() {
+
         testUser = new User();
         testUser.setId(1);
         testUser.setName("John");

@@ -30,7 +30,7 @@ import java.util.Properties;
 @EnableJpaRepositories("com.innowise.rudkovskii.repository")
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
-@Import({RedisConfig.class, JacksonConfig.class})
+@Import(RedisConfig.class)
 public class AppConfig {
 
     @Autowired

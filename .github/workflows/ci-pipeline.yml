@@ -63,8 +63,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Wait for Redis to be ready
+        run: |
+          timeout 30s bash -c 'until redis-cli -h localhost ping | grep -q PONG; do echo "Waiting for Redis..."; sleep 2; done'
+          echo "Redis is ready!"
+
       - name: Run tests with coverage
         run: mvn -B test jacoco:report
+        env:
+          SPRING_REDIS_HOST: localhost
+          SPRING_REDIS_PORT: 6379
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -73,6 +81,13 @@ jobs:
           path: |
             target/surefire-reports/
             target/failsafe-reports/
+          if-no-files-found: ignore
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: target/site/jacoco/
           if-no-files-found: ignore
 
   code-analysis:

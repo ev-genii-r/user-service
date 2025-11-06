@@ -134,14 +134,11 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build for SonarQube analysis
-        run: mvn -B compile -DskipTests
-
       - name: Build and run tests with coverage
         run: |
-          mvn -B clean verify \
-            -DskipIntegrationTests \
-            -Dsonar.coverage.exclusions=**/*IntegrationTest.java
+          mvn -B clean org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+            -DskipTests=false \
+            -DskipITs=true
 
       - name: SonarQube Scan
         run: |

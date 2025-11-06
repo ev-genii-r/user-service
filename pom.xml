@@ -9,20 +9,14 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <sonar.coverage.exclusions>
-            **/config/**,
-            **/controller/**,
-            **/dto/**,
-            **/entity/**,
-            **/handler/**
-        </sonar.coverage.exclusions>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jacoco.version>0.8.11</jacoco.version>
+        <sonar.coverage.exclusions>src/main/java/com/innowise/rudkovskii/config/**,src/main/java/com/innowise/rudkovskii/controller/**,src/main/java/com/innowise/rudkovskii/dto/**,src/main/java/com/innowise/rudkovskii/entity/**,src/main/java/com/innowise/rudkovskii/handler/**,src/main/java/Main.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -46,7 +40,6 @@
             <artifactId>spring-data-redis</artifactId>
             <version>4.0.0-M6</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -76,10 +69,25 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Одна версия testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>1.17.6</version>
+            <version>1.19.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.19.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.19.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -96,34 +104,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <version>1.19.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>1.17.6</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>1.17.6</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>7.0.0-M9</version>
             <scope>test</scope>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>7.0.0</version>
@@ -149,12 +136,11 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.17.2</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate7</artifactId>
             <version>2.20.1</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.hibernate.orm</groupId>
@@ -227,9 +213,9 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
+            <version>1.18.32</version>
+            <scope>provided</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -255,7 +241,12 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.42</version>
+                            <version>1.18.32</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>1.6.3</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -275,17 +266,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
-                <configuration>
-                    <excludes>
-                        <exclude>sun/**</exclude>
-                        <exclude>com/sun/**</exclude>
-                        <exclude>java/**</exclude>
-                        <exclude>javax/**</exclude>
-                        <exclude>jdk/**</exclude>
-                        <exclude>org/**</exclude>
-                    </excludes>
-                </configuration>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -300,15 +281,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.9.1.2184</version>
-                <configuration>
-                    <sonar.coverage.exclusions>**/config/**,**/controller/**,**/dto/**,**/entity/**,**/handler/**,**/Main.java</sonar.coverage.exclusions>
-                </configuration>
             </plugin>
         </plugins>
     </build>

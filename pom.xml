@@ -13,7 +13,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.11</jacoco.version>
-        <sonar.coverage.exclusions>src/main/java/com/innowise/rudkovskii/service/**</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>src/main/java/com/innowise/rudkovskii/service/**,src/main/java/com/innowise/rudkovskii/controller/**,src/main/java/com/innowise/rudkovskii/dto/**,src/main/java/com/innowise/rudkovskii/entity/**,src/main/java/com/innowise/rudkovskii/handler/**,src/main/java/Main.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>

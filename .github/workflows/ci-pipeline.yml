@@ -137,15 +137,23 @@ jobs:
       - name: Build for SonarQube analysis
         run: mvn -B compile -DskipTests
 
+      - name: Build and run tests with coverage
+        run: |
+          mvn -B clean verify \
+            -DskipIntegrationTests \
+            -Dsonar.coverage.exclusions=**/*IntegrationTest.java
+
       - name: SonarQube Scan
         run: |
-          mvn -B verify sonar:sonar \
+          mvn -B sonar:sonar \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.coverage.exclusions=**/*IntegrationTest.java \
-            -DskipTests
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.java.coveragePlugin=jacoco
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

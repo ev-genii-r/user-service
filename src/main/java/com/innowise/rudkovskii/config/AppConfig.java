@@ -33,16 +33,13 @@ import java.util.Properties;
 @Import(RedisConfig.class)
 public class AppConfig {
 
-    @Autowired
-    private Environment env;
-
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl(env.getProperty("DB_URL"));
-        dataSource.setUsername(env.getProperty("DB_USERNAME"));
-        dataSource.setPassword(env.getProperty("DB_PASSWORD"));
+        dataSource.setUrl(System.getenv("DB_URL"));
+        dataSource.setUsername(System.getenv("DB_USERNAME"));
+        dataSource.setPassword(System.getenv("DB_PASSWORD"));
         return dataSource;
     }
 

@@ -19,7 +19,7 @@ public class CardInfoController {
     private final CardInfoService cardInfoService;
     private final CardInfoMapper cardInfoMapper;
 
-    public CardInfoController(CardInfoService cardInfoService, CardInfoMapper cardInfoMapper, UserService userService) {
+    public CardInfoController(CardInfoService cardInfoService, CardInfoMapper cardInfoMapper) {
         this.cardInfoService = cardInfoService;
         this.cardInfoMapper = cardInfoMapper;
     }

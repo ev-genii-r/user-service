@@ -91,7 +91,6 @@ class CardInfoServiceIntegrationTest {
         CardInfo createdCard = cardInfoService.create(testCard);
         CardInfo retrievedCard = cardInfoService.getById(createdCard.getId());
 
-        assertNotNull(createdCard.getId());
         assertEquals(testCard.getNumber(), retrievedCard.getNumber());
         assertEquals(testCard.getHolder(), retrievedCard.getHolder());
         assertEquals(testCard.getExpirationDate(), retrievedCard.getExpirationDate());

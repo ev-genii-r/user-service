@@ -19,8 +19,12 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @CachePut(value = "users", key = "#result.id")
     @Transactional

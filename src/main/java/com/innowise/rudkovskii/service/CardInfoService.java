@@ -17,8 +17,12 @@ import java.util.List;
 @Service
 public class CardInfoService {
 
+    private final CardInfoRepository cardInfoRepository;
+
     @Autowired
-    private CardInfoRepository cardInfoRepository;
+    public CardInfoService(CardInfoRepository cardInfoRepository) {
+        this.cardInfoRepository = cardInfoRepository;
+    }
 
     @CachePut(value = "cards", key = "#result.id")
     @Transactional

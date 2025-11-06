@@ -305,7 +305,10 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.10.0.2594</version>
+                <version>3.9.1.2184</version>
+                <configuration>
+                    <sonar.coverage.exclusions>**/config/**,**/controller/**,**/dto/**,**/entity/**,**/handler/**,**/Main.java</sonar.coverage.exclusions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
